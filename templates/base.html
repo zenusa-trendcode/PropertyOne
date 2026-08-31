@@ -1,0 +1,79 @@
+{% load static %}
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}PropertiOne PMS{% endblock %}</title>
+  <link rel="icon" href="{% static 'favicon.svg' %}" type="image/svg+xml">
+  <link rel="stylesheet" href="{% static 'css/pms.css' %}">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-lockup">
+      <a class="brand-mark" href="{% url 'pms:dashboard' %}">P1</a>
+      <div>
+        <p class="eyebrow">Property Management System</p>
+        <h1>PropertiOne PMS</h1>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <form class="top-search" action="{% if active_module and active_module != 'dashboard' and active_module != 'reports' %}{% url 'pms:module_list' active_module %}{% else %}{% url 'pms:dashboard' %}{% endif %}" method="get">
+        <span>Q</span>
+        <input name="q" value="{{ query|default:'' }}" placeholder="Cari property, tenant, invoice, work order">
+      </form>
+      <a class="icon-button" href="{% url 'admin:index' %}" aria-label="Admin">A</a>
+      <details class="account-menu">
+        <summary>{{ request.user.get_full_name|default:request.user.username }}</summary>
+        <form action="{% url 'logout' %}" method="post">
+          {% csrf_token %}
+          <button type="submit">Logout</button>
+        </form>
+      </details>
+    </div>
+  </header>
+
+  <aside class="sidebar">
+    <nav class="nav-group">
+      <p class="nav-title">Workspace</p>
+      <a class="nav-item {% if active_module == 'dashboard' %}active{% endif %}" href="{% url 'pms:dashboard' %}">
+        <span>CC</span>
+        Command Center
+      </a>
+    </nav>
+    {% for group in nav_groups %}
+      <nav class="nav-group">
+        <p class="nav-title">{{ group.title }}</p>
+        {% for item in group.items %}
+          <a class="nav-item {% if active_module == item.slug %}active{% endif %}" href="{% url 'pms:module_list' item.slug %}">
+            <span>{{ item.code }}</span>
+            {{ item.title }}
+          </a>
+        {% endfor %}
+        {% if group.title == 'Control' %}
+          <a class="nav-item {% if active_module == 'reports' %}active{% endif %}" href="{% url 'pms:reports' %}">
+            <span>RP</span>
+            Reports
+          </a>
+        {% endif %}
+      </nav>
+    {% endfor %}
+    <div class="sidebar-card">
+      <strong>Renewal Watch</strong>
+      <span>Gunakan dashboard untuk melihat lease yang expire 30/60/90 hari.</span>
+      <div class="mini-meter"><i style="width:72%"></i></div>
+    </div>
+  </aside>
+
+  <main class="content">
+    {% if messages %}
+      <div class="toast-wrap">
+        {% for message in messages %}
+          <div class="toast">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

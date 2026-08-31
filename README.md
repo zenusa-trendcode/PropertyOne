@@ -1,33 +1,60 @@
 # PropertiOne PMS
 
-PropertiOne PMS adalah prototype property management system berbasis Vinext/React untuk mengelola portfolio properti, unit, tenant, lease, billing, maintenance, inspeksi, dokumen, report, dan role approval dalam satu dashboard operasional.
+PropertiOne PMS adalah property management system full-stack berbasis Django untuk kebutuhan bisnis nyata: portfolio, unit, tenant, lease, billing, maintenance, inspection, document vault, approval, reporting, dan dashboard operasional.
 
-## Modul utama
+Prototype React/Vinext lama masih ada di folder `app/`, tetapi jalur utama produk sekarang adalah Django.
 
-- Command Center: KPI portfolio, rent roll, occupancy, outstanding, work order, cash aging, dan activity timeline.
-- Portfolio: health card per properti dengan occupancy, inspection score, service score, NOI, deposit held, dan risk status.
-- Units: daftar unit, status vacancy, lease end, kondisi unit, meter check, rent, dan next action.
-- Tenants: tenant health, saldo, dokumen, last contact, dan communication log.
-- Leases: pipeline Active, Renewal Offered, Move Out Notice, dan Collection Hold dengan probability renewal.
-- Billing: accounts receivable, paid amount, outstanding, aging bucket, dan collection playbook.
-- Maintenance: kanban work order berdasarkan state, priority, SLA, vendor, dan biaya.
-- Inspections: kalender inspeksi, score, finding, compliance checklist.
-- Documents: vault dokumen legal, compliance, handover, asset, owner, expiry, dan status.
-- Reports and Settings: report pack owner/finance/facility serta matrix role dan business rules.
+## Dokumentasi
 
-## Menjalankan proyek
+- [User Guide](USER_GUIDE.md): panduan penggunaan untuk property manager, finance, facility, owner representative, dan admin.
 
-```bash
-npm install
-npm run dev
+## Cara run
+
+```powershell
+cd "C:\Users\Artha-12\OneDrive - Artha Data Solutions LLC\Documents\Projek Individu\Property Management System"
+.\.venv\Scripts\python.exe manage.py runserver 127.0.0.1:8000
 ```
 
-Preview lokal akan tersedia di `http://localhost:3000/`.
+Buka `http://127.0.0.1:8000/`.
 
-## Build produksi
+## Login demo
 
-```bash
-npm run build
+- Username: `admin`
+- Password: `Admin12345!`
+
+## Setup ulang dari awal
+
+Jika database belum ada atau proyek dipindahkan ke komputer lain:
+
+```powershell
+cd "C:\Users\Artha-12\OneDrive - Artha Data Solutions LLC\Documents\Projek Individu\Property Management System"
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe manage.py migrate
+.\.venv\Scripts\python.exe manage.py seed_demo
+.\.venv\Scripts\python.exe manage.py runserver 127.0.0.1:8000
 ```
 
-Stack proyek mengikuti scaffold Sites/Vinext: Next-style `app/`, React 19, TypeScript, Vite, Tailwind CSS, dan Cloudflare Worker-compatible output.
+## Modul produk
+
+- Command Center: KPI rent roll, occupancy, outstanding AR, deposit held, open work order, approval queue, lease pipeline, activity timeline.
+- Organizations: legal entity, tax, currency, contact, dan ownership context.
+- Properties: property master, manager, service charge, sinking fund, occupancy, rent roll.
+- Units: status availability, market rent, current rent, handover, meter, next action.
+- Tenants: KYC, tenant health, risk level, contact, outstanding balance.
+- Leases: active lease, renewal, notice, collection hold, rent, deposit, escalation, renewal probability.
+- Billing: invoice, payment, outstanding, aging bucket, reminder count.
+- Vendors: vendor category, SLA, rating, contact, active status.
+- Maintenance: work order, priority, SLA, vendor assignment, owner approval, evidence rules, quick status transition.
+- Inspections: schedule, score, finding, corrective action.
+- Documents: legal/KYC/handover/insurance/tax vault, expiry monitoring, owner.
+- Approvals: capex, collection, discount, exception approval flow.
+- Reports: owner statement, delinquency pack, asset health, lease expiry book.
+
+## Verifikasi
+
+```powershell
+.\.venv\Scripts\python.exe manage.py check
+.\.venv\Scripts\python.exe manage.py test
+```
+
+Keduanya sudah lulus pada implementasi saat ini.

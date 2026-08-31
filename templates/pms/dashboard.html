@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Command Center - PropertiOne PMS{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div>
+    <p class="breadcrumbs">Beranda / Command Center</p>
+    <h2>Operational Portfolio</h2>
+    <p class="page-subtitle">Kontrol portfolio, lease, tenant, billing, maintenance, inspeksi, dokumen, dan approval dalam satu workspace.</p>
+  </div>
+  <form class="head-actions" method="get">
+    <label class="select-control">
+      <span>Property</span>
+      <select name="property" onchange="this.form.submit()">
+        <option value="all">All Properties</option>
+        {% for property in properties %}
+          <option value="{{ property.pk }}" {% if selected_property_id == property.pk|stringformat:"s" %}selected{% endif %}>{{ property.name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <a class="btn secondary" href="{% url 'pms:reports' %}">Reports</a>
+    <a class="btn primary" href="{% url 'pms:module_create' 'leases' %}">+ New Lease</a>
+  </form>
+</section>
+
+<section class="summary-grid">
+  {% for card in metric_cards %}
+    <article class="summary-card {{ card.tone }}">
+      <span>{{ card.label }}</span>
+      <strong>{{ card.value }}</strong>
+      <small>{{ card.detail }}</small>
+    </article>
+  {% endfor %}
+</section>
+
+<section class="dashboard-grid">
+  <article class="panel wide">
+    <div class="panel-head">
+      <div>
+        <h3>Portfolio Performance</h3>
+        <p>Okupansi, rent roll, work order, dan status operasional per properti.</p>
+      </div>
+      <a class="btn secondary" href="{% url 'pms:module_list' 'properties' %}">View All</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>Type</th>
+            <th>Units</th>
+            <th>Occupancy</th>
+            <th>Rent Roll</th>
+            <th>Open WO</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for property in portfolio_rows %}
+            <tr>
+              <td>
+                <a class="table-main-link" href="{{ property.get_absolute_url }}">{{ property.name }}</a>
+                <span>{{ property.city }} / {{ property.manager_name }}</span>
+              </td>
+              <td>{{ property.get_property_type_display }}</td>
+              <td>{{ property.total_units }}</td>
+              <td>
+                <div class="cell-meter">
+                  <b>{{ property.occupancy_rate }}%</b>
+                  <i style="width:{{ property.occupancy_rate }}%"></i>
+                </div>
+              </td>
+              <td>Rp {{ property.active_rent_roll|floatformat:0|intcomma }}</td>
+              <td>{{ property.work_orders.count }}</td>
+              <td><span class="status {{ property.get_status_display|lower }}">{{ property.get_status_display }}</span></td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="7">Belum ada property.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head compact"><h3>Cash Aging</h3></div>
+    <div class="aging-list">
+      {% for bucket in aging_buckets %}
+        <div class="aging-row">
+          <div>
+            <strong>{{ bucket.label }}</strong>
+            <span>{{ bucket.count }} invoice / {{ bucket.amount }}</span>
+          </div>
+          <div class="bar"><i style="width:{{ bucket.width }}%"></i></div>
+        </div>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head compact"><h3>Priority Queue</h3></div>
+    <div class="work-list">
+      {% for order in work_orders %}
+        <a class="work-item" href="{{ order.get_absolute_url }}">
+          <div>
+            <strong>{{ order.work_order_number }}</strong>
+            <span>{{ order.title }}</span>
+          </div>
+          <small>{{ order.get_priority_display }} / {{ order.get_status_display }}</small>
+        </a>
+      {% empty %}
+        <p class="empty-text">Tidak ada open work order.</p>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="panel wide">
+    <div class="panel-head compact"><h3>Lease Pipeline</h3></div>
+    <div class="pipeline-grid compact-board">
+      {% for lane in lease_lanes %}
+        <section class="lane">
+          <div class="lane-head">
+            <h3>{{ lane.label }}</h3>
+            <span>{{ lane.items|length }}</span>
+          </div>
+          {% for lease in lane.items %}
+            <a class="lease-ticket" href="{{ lease.get_absolute_url }}">
+              <p class="eyebrow">{{ lease.lease_code }} / {{ lease.unit.unit_code }}</p>
+              <h4>{{ lease.tenant.display_name }}</h4>
+              <div class="ticket-facts">
+                <div><span>Rent</span><strong>Rp {{ lease.rent_amount|floatformat:0|intcomma }}</strong></div>
+                <div><span>End</span><strong>{{ lease.end_date|date:"d M Y" }}</strong></div>
+              </div>
+              <div class="bar"><i style="width:{{ lease.renewal_probability }}%"></i></div>
+            </a>
+          {% empty %}
+            <p class="empty-text">Tidak ada lease pada lane ini.</p>
+          {% endfor %}
+        </section>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head compact"><h3>Documents Due</h3></div>
+    <div class="stack-list">
+      {% for document in documents_due %}
+        <a class="fact" href="{{ document.get_absolute_url }}">
+          <span>{{ document.get_document_type_display }} / {{ document.expiry_date|date:"d M Y"|default:"No expiry" }}</span>
+          <strong>{{ document.title }}</strong>
+        </a>
+      {% empty %}
+        <p class="empty-text">Dokumen aman.</p>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head compact"><h3>Approval Queue</h3></div>
+    <div class="stack-list">
+      {% for approval in approvals %}
+        <a class="fact" href="{% url 'pms:module_detail' 'approvals' approval.pk %}">
+          <span>{{ approval.request_number }} / {{ approval.approver_name }}</span>
+          <strong>{{ approval.title }}</strong>
+        </a>
+      {% empty %}
+        <p class="empty-text">Tidak ada approval pending.</p>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="panel wide">
+    <div class="panel-head compact"><h3>Activity Timeline</h3></div>
+    <div class="timeline">
+      {% for event in activity_events %}
+        <div class="timeline-row">
+          <time>{{ event.event_time|date:"H:i" }}</time>
+          <div>
+            <strong>{{ event.title }}</strong>
+            <span>{{ event.description }}</span>
+          </div>
+        </div>
+      {% empty %}
+        <p class="empty-text">Belum ada aktivitas.</p>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+{% endblock %}

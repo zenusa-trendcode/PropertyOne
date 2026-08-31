@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}{{ object }} - PropertiOne PMS{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div>
+    <p class="breadcrumbs">{{ spec.title }} / Detail</p>
+    <h2>{{ object }}</h2>
+    <p class="page-subtitle">{{ spec.subtitle }}</p>
+  </div>
+  <div class="head-actions">
+    <a class="btn secondary" href="{% url 'pms:module_list' spec.slug %}">Back</a>
+    <a class="btn primary" href="{% url 'pms:module_update' spec.slug object.pk %}">Edit</a>
+  </div>
+</section>
+
+{% if related_cards %}
+  <section class="summary-grid compact">
+    {% for card in related_cards %}
+      <article class="summary-card neutral">
+        <span>{{ card.label }}</span>
+        <strong>{{ card.value }}</strong>
+        <small>{{ card.detail }}</small>
+      </article>
+    {% endfor %}
+  </section>
+{% endif %}
+
+<section class="detail-grid">
+  <article class="panel wide">
+    <div class="panel-head compact"><h3>Record Facts</h3></div>
+    <dl class="fact-grid">
+      {% for fact in facts %}
+        <div>
+          <dt>{{ fact.label }}</dt>
+          <dd>
+            {% if fact.kind == 'status' %}
+              <span class="status {{ fact.tone }}">{{ fact.value }}</span>
+            {% else %}
+              {{ fact.value|linebreaksbr }}
+            {% endif %}
+          </dd>
+        </div>
+      {% endfor %}
+    </dl>
+  </article>
+
+  {% if spec.slug == 'maintenance' %}
+    <aside class="panel">
+      <div class="panel-head compact"><h3>Quick Transition</h3></div>
+      <div class="action-stack">
+        <form method="post" action="{% url 'pms:work_order_transition' object.pk 'ASSIGNED' %}">
+          {% csrf_token %}
+          <button class="btn secondary" type="submit">Vendor Assigned</button>
+        </form>
+        <form method="post" action="{% url 'pms:work_order_transition' object.pk 'IN_PROGRESS' %}">
+          {% csrf_token %}
+          <button class="btn secondary" type="submit">In Progress</button>
+        </form>
+        <form method="post" action="{% url 'pms:work_order_transition' object.pk 'QA' %}">
+          {% csrf_token %}
+          <button class="btn secondary" type="submit">QA Review</button>
+        </form>
+        <form method="post" action="{% url 'pms:work_order_transition' object.pk 'CLOSED' %}">
+          {% csrf_token %}
+          <button class="btn primary" type="submit">Close Work Order</button>
+        </form>
+      </div>
+    </aside>
+  {% endif %}
+</section>
+{% endblock %}

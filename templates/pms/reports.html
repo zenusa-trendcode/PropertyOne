@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - PropertiOne PMS{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div>
+    <p class="breadcrumbs">Control / Reports</p>
+    <h2>Report Center</h2>
+    <p class="page-subtitle">Paket report yang lazim dibutuhkan owner, property manager, finance, dan facility team.</p>
+  </div>
+  <div class="head-actions">
+    <a class="btn secondary" href="{% url 'pms:dashboard' %}">Dashboard</a>
+  </div>
+</section>
+
+<section class="report-grid">
+  {% for pack in packs %}
+    <article class="report-card">
+      <div class="report-icon">{{ pack.title|slice:":2" }}</div>
+      <h3>{{ pack.title }}</h3>
+      <p>{{ pack.description }}</p>
+      <div class="chip-row">
+        {% for metric in pack.metrics %}
+          <span>{{ metric }}</span>
+        {% endfor %}
+      </div>
+      <button class="btn secondary" type="button">Generate</button>
+    </article>
+  {% endfor %}
+</section>
+{% endblock %}

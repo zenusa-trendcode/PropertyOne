@@ -1,0 +1,46 @@
+{% load static %}
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login - PropertiOne PMS</title>
+  <link rel="icon" href="{% static 'favicon.svg' %}" type="image/svg+xml">
+  <link rel="stylesheet" href="{% static 'css/pms.css' %}">
+</head>
+<body class="login-body">
+  <main class="login-shell">
+    <section class="login-panel">
+      <div class="brand-lockup">
+        <div class="brand-mark">P1</div>
+        <div>
+          <p class="eyebrow">Property Management System</p>
+          <h1>PropertiOne PMS</h1>
+        </div>
+      </div>
+      <h2>Masuk ke workspace operasional</h2>
+      <p>Gunakan akun demo setelah menjalankan seed data.</p>
+      {% if form.errors %}
+        <div class="form-alert">Username atau password tidak sesuai.</div>
+      {% endif %}
+      <form method="post" class="form-grid">
+        {% csrf_token %}
+        <label>
+          <span>Username</span>
+          {{ form.username }}
+        </label>
+        <label>
+          <span>Password</span>
+          {{ form.password }}
+        </label>
+        <button class="btn primary" type="submit">Login</button>
+      </form>
+      <div class="demo-credential">
+        <strong>Demo account</strong>
+        <span>Username: admin</span>
+        <span>Password: Admin12345!</span>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

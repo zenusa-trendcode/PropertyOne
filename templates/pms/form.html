@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}{% if object %}Edit{% else %}Create{% endif %} {{ spec.title }} - PropertiOne PMS{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div>
+    <p class="breadcrumbs">{{ spec.title }} / {% if object %}Edit{% else %}Create{% endif %}</p>
+    <h2>{% if object %}Edit {{ object }}{% else %}Create {{ spec.title }}{% endif %}</h2>
+    <p class="page-subtitle">{{ spec.subtitle }}</p>
+  </div>
+  <div class="head-actions">
+    <a class="btn secondary" href="{% url 'pms:module_list' spec.slug %}">Cancel</a>
+  </div>
+</section>
+
+<section class="panel form-panel">
+  <form method="post" class="record-form">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="form-alert">{{ form.non_field_errors }}</div>
+    {% endif %}
+    {% for field in form %}
+      <label class="{% if field.field.widget.input_type == 'checkbox' %}checkbox-row{% endif %}">
+        <span>{{ field.label }}</span>
+        {{ field }}
+        {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+        {% for error in field.errors %}<em>{{ error }}</em>{% endfor %}
+      </label>
+    {% endfor %}
+    <div class="form-actions">
+      <button class="btn primary" type="submit">Save</button>
+      <a class="btn secondary" href="{% url 'pms:module_list' spec.slug %}">Back to List</a>
+    </div>
+  </form>
+</section>
+{% endblock %}
