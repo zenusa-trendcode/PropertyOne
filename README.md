@@ -2,8 +2,6 @@
 
 PropertiOne PMS adalah property management system full-stack berbasis Django untuk kebutuhan bisnis nyata: portfolio, unit, tenant, lease, billing, maintenance, inspection, document vault, approval, reporting, dan dashboard operasional.
 
-Prototype React/Vinext lama masih ada di folder `app/`, tetapi jalur utama produk sekarang adalah Django.
-
 ## Dokumentasi
 
 - [User Guide](USER_GUIDE.md): panduan penggunaan untuk property manager, finance, facility, owner representative, dan admin.
@@ -11,7 +9,7 @@ Prototype React/Vinext lama masih ada di folder `app/`, tetapi jalur utama produ
 ## Cara run
 
 ```powershell
-cd "C:\Users\Artha-12\OneDrive - Artha Data Solutions LLC\Documents\Projek Individu\Property Management System"
+cd "C:\Users\Artha-12\OneDrive - Artha Data Solutions LLC\Documents\Zenusa\Property Management System"
 .\.venv\Scripts\python.exe manage.py runserver 127.0.0.1:8000
 ```
 
@@ -27,7 +25,7 @@ Buka `http://127.0.0.1:8000/`.
 Jika database belum ada atau proyek dipindahkan ke komputer lain:
 
 ```powershell
-cd "C:\Users\Artha-12\OneDrive - Artha Data Solutions LLC\Documents\Projek Individu\Property Management System"
+cd "C:\Users\Artha-12\OneDrive - Artha Data Solutions LLC\Documents\Zenusa\Property Management System"
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 .\.venv\Scripts\python.exe manage.py migrate
 .\.venv\Scripts\python.exe manage.py seed_demo
