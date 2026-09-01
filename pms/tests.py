@@ -1,9 +1,11 @@
+from datetime import timedelta
 from io import StringIO
 
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 
 from .models import ActivityEvent, Invoice, Unit, WorkOrder
 
@@ -35,6 +37,7 @@ class PmsSmokeTests(TestCase):
 
     def test_invoice_aging_bucket_is_business_aware(self):
         invoice = Invoice.objects.get(invoice_number='INV-0726-044')
+        invoice.due_date = timezone.localdate() - timedelta(days=45)
         self.assertEqual(invoice.aging_bucket, '31-60')
         self.assertGreater(invoice.outstanding_amount, 0)
 
